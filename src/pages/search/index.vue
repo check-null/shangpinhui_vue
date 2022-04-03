@@ -1,8 +1,6 @@
 <template>
   <div>
-    search
-    <p>params: {{ params }}</p>
-    <p>query: {{ query }}</p>
+    <typeNav/>
   </div>
 </template>
 

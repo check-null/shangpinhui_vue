@@ -1,7 +1,61 @@
 <template>
   <div class="type-nav">
     <div class="container">
-      <h2 class="all">全部商品分类</h2>
+      <div @mouseleave="leaveShow" @mouseenter="enterShow">
+        <h2 class="all">全部商品分类</h2>
+        <!-- 过渡动画 -->
+        <transition name="sort">
+          <div class="sort" v-show="show">
+            <div class="all-sort-list2" @click="goSearch">
+              <div
+                class="item"
+                v-for="(c1, index) in categoryList"
+                :key="c1.categoryId"
+              >
+                <h3
+                  :class="{ cur: currentIndex == index }"
+                  @mouseenter="changeIndex(index)"
+                >
+                  <a
+                    :data-categoryName="c1.categoryName"
+                    :data-category1Id="c1.categoryId"
+                    >{{ c1.categoryName }}</a
+                  >
+                </h3>
+                <div
+                  class="item-list clearfix"
+                  :style="{ display: currentIndex == index ? 'block' : 'none' }"
+                >
+                  <div class="subitem">
+                    <dl
+                      class="fore"
+                      v-for="c2 in c1.categoryChild"
+                      :key="c2.categoryId"
+                    >
+                      <dt>
+                        <a
+                          :data-categoryName="c2.categoryName"
+                          :data-category2Id="c2.categoryId"
+                          >{{ c2.categoryName }}</a
+                        >
+                      </dt>
+                      <dd>
+                        <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
+                          <a
+                            :data-categoryName="c3.categoryName"
+                            :data-category3Id="c3.categoryId"
+                            >{{ c3.categoryName }}</a
+                          >
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
       <nav class="nav">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
@@ -12,63 +66,100 @@
         <a href="###">有趣</a>
         <a href="###">秒杀</a>
       </nav>
-
-      <div class="sort">
-        <div class="all-sort-list2">
-          <div
-            class="item"
-            v-for="categoryLv1 in categoryList"
-            :key="categoryLv1.categoryId"
-          >
-            <h3>
-              <a href="">{{ categoryLv1.categoryName }}</a>
-            </h3>
-            <div class="item-list clearfix">
-              <div
-                class="subitem"
-                v-for="categoryLv2 in categoryLv1.categoryChild"
-                :key="categoryLv2.categoryId"
-              >
-                <dl class="fore">
-                  <dt>
-                    <a href="">{{ categoryLv2.categoryName }}</a>
-                  </dt>
-                  <dd>
-                    <em
-                      v-for="categoryLv3 in categoryLv2.categoryChild"
-                      :key="categoryLv3.categoryId"
-                    >
-                      <a href="">{{ categoryLv3.categoryName }}</a>
-                    </em>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import《组件名称》from'《组件路径》';
 import { mapState } from "vuex";
+//引入lodash:是把lodash全部封装好的函数全都引入进来了
+//按需引入：只是引入节流函数，其他的函数没有引入（模块），这样做的好处是，当你打包项目的时候体积会小一些
+import throttle from "lodash/throttle";
 export default {
-  name: "TypeNav",
-  created() {
-    this.$store.dispatch("categoryList");
+  name: "typeNav",
+  data() {
+    return {
+      //当前这个属性决定了到底那个h3身上有类名
+      currentIndex: -1,
+      show: true,
+    };
   },
+  //发请求经常在mounted生命周期函数中进行
+  //组件挂载完毕
+  mounted() {
+    //当组件挂载完毕，让show属性变为false
+    //如果不是Home路由组件，将typeNav进行隐藏
+    if (this.$route.path != "/home") {
+      this.show = false;
+    }
+  },
+  //计算属性
   computed: {
+    //state:他是咱们大仓库中的state（包含home|search）
     ...mapState({
-      categoryList: (state) => state.home.categoryList.slice(0, 16),
+      categoryList: (state) => state.home.categoryList.splice(0, 16),
     }),
+  },
+  methods: {
+    //用于修改组件实例身上的currentIndex的属性值
+    //当用户鼠标移入到h3身上的时候就会立即出发一次
+    changeIndex: throttle((index) => {
+      //修改当前currentIndex索引值
+      //函数节流:在20MS时间之内只能执行一次
+      this.currentIndex = index;
+    }, 20),
+    //进行路由跳转的回调函数
+    goSearch(event) {
+      //event.target:获取到的是出发事件的元素(div、h3、a、em、dt、dl)
+      let node = event.target;
+      //给a标签添加自定义属性data-categoryName,全部的字标签当中只有a标签带有自定义属性，别的标签名字----dataset纯属扯淡
+      let { categoryname, category1id, category2id, category3id } =
+        node.dataset;
+      //第二个问题解决了：点击的到底是不是a标签（只要这个标签身上带有categoryname）一定是a标签
+      //当前这个if语句：一定是a标签才会进入
+      if (categoryname) {
+        //准备路由跳转的参数对象
+        let loction = { name: "search" };
+        let query = { categoryName: categoryname };
+        //一定是a标签：一级目录
+        if (category1id) {
+          query.category1Id = category1id;
+          //一定是a标签：二级目录
+        } else if (category2id) {
+          query.category2Id = category2id;
+          //一定是a标签：三级目录
+        } else {
+          query.category3Id = category3id;
+        }
+        //判断：如果路由跳转的时候，带有params参数，捎带脚传递过去
+        if (this.$route.params) {
+          loction.params = this.$route.params;
+          //动态给location配置对象添加query属性
+          loction.query = query;
+          //路由跳转
+          this.$router.push(loction);
+        }
+      }
+    },
+    //当鼠标移入的时候，让商品分类列表进行展示
+    enterShow() {
+      if (this.$route.path != "/home") {
+        this.show = true;
+      }
+    },
+    //当鼠标离开的时候，让商品分类列表进行隐藏
+    leaveShow() {
+      this.currentIndex = -1;
+      //判断如果是Search路由组件的时候才会执行
+      if (this.$route.path != "/home") {
+        this.show = false;
+      }
+    },
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style scoped lang="less">
 .type-nav {
   border-bottom: 2px solid #e1251b;
 
@@ -121,6 +212,9 @@ export default {
 
             a {
               color: #333;
+            }
+            &.cur {
+              background: skyblue;
             }
           }
 
@@ -177,16 +271,21 @@ export default {
               }
             }
           }
-
-          &:hover {
-            background-color: lightgray;
-
-            .item-list {
-              display: block;
-            }
-          }
         }
       }
+    }
+    //过渡动画的样式
+    //过渡动画开始状态（进入）
+    .sort-enter {
+      height: 0px;
+    }
+    // 过渡动画结束状态（进入）
+    .sort-enter-to {
+      height: 461px;
+    }
+    // 定义动画时间、速率
+    .sort-enter-active {
+      transition: all 0.5s linear;
     }
   }
 }

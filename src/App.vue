@@ -12,12 +12,14 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 export default {
   data() {
-    return {
-    }
+    return {};
   },
   components: {
     Header,
     Footer,
+  },
+  created() {
+    this.$store.dispatch("categoryList");
   },
 };
 </script>

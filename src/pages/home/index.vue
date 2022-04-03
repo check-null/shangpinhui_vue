@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TypeNav />
+    <typeNav />
     <Listcontainer />
     <Commend />
     <Rank />
@@ -48,5 +48,5 @@ export default {
 };
 </script>
 
-<style lang="lcss" scoped>
+<style lang="less" scoped>
 </style>
