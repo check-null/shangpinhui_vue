@@ -103,7 +103,7 @@ export default {
   methods: {
     //用于修改组件实例身上的currentIndex的属性值
     //当用户鼠标移入到h3身上的时候就会立即出发一次
-    changeIndex: throttle((index) => {
+    changeIndex: throttle(function (index) {
       //修改当前currentIndex索引值
       //函数节流:在20MS时间之内只能执行一次
       this.currentIndex = index;
