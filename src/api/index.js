@@ -11,3 +11,5 @@ export const reqGetBannerList = () => mockAxios.get("/banner");
 
 //获取floor数据
 export const reqFloorList = () => mockAxios.get("/floor");
+
+export const reqGetSearchInfo = (params = {}) => request({ url: '/list', method: 'post', data: params }) 
