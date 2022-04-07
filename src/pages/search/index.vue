@@ -11,10 +11,10 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>x</i></li>
-            <li class="with-x">华为<i>x</i></li>
-            <li class="with-x">OPPO<i>x</i></li>
+            <li class="with-x" v-if="searchParams.categoryName">
+              {{ searchParams.categoryName }}
+              <i class="" @click="removeCateName">x</i>
+            </li>
           </ul>
         </div>
 
@@ -158,6 +158,15 @@ export default {
   computed: {
     ...mapGetters(["goodsList"]),
   },
+  watch: {
+    $route(oldValue, newValue) {
+      Object.assign(this.searchParams, this.$route.query, this.$route.params);
+      this.getSearchList();
+      this.searchParams.category1Id = undefined;
+      this.searchParams.category2Id = undefined;
+      this.searchParams.category3Id = undefined;
+    },
+  },
   beforeMount() {
     //在发请求之前，把接口需要传递参数，进行整理（在给服务器发请求之前，把参数整理好，服务器就会返回查询的数据）
     Object.assign(this.searchParams, this.$route.query, this.$route.params);
@@ -168,6 +177,13 @@ export default {
   methods: {
     getSearchList() {
       this.$store.dispatch("getSearchList", this.searchParams);
+    },
+    removeCateName() {
+      this.searchParams.categoryName = undefined;
+      this.searchParams.category1Id = undefined;
+      this.searchParams.category2Id = undefined;
+      this.searchParams.category3Id = undefined;
+      this.getSearchList();
     },
   },
 };
