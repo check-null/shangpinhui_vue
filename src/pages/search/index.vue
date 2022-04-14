@@ -122,7 +122,13 @@
               </li>
             </ul>
           </div>
-          <pagination />
+          <pagination
+            :pageNo="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="searchParams.total"
+            :continues="searchParams.continues"
+            @getPageNo="getPageNo"
+          />
         </div>
       </div>
     </div>
@@ -156,6 +162,10 @@ export default {
         props: [],
         //品牌
         trademark: "",
+        pageNo: 1,
+        pageSize: 3,
+        total: 91,
+        continues: 5,
       },
     };
   },
@@ -257,6 +267,10 @@ export default {
       }
       this.searchParams.order = `${index}:${newOrder}`;
       this.isActive(index);
+      this.getSearchList();
+    },
+    getPageNo(page) {
+      this.searchParams.pageNo = page;
       this.getSearchList();
     },
   },
@@ -505,7 +519,6 @@ export default {
           }
         }
       }
-
     }
   }
 }

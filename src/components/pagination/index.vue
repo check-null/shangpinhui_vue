@@ -1,31 +1,55 @@
 <template>
   <div class="fr page">
     <div class="sui-pagination clearfix">
-      <ul>
-        <li class="prev disabled">
-          <a href="#">«上一页</a>
-        </li>
-        <li class="active">
-          <a href="#">1</a>
-        </li>
-        <li>
-          <a href="#">2</a>
-        </li>
-        <li>
-          <a href="#">3</a>
-        </li>
-        <li>
-          <a href="#">4</a>
-        </li>
-        <li>
-          <a href="#">5</a>
-        </li>
-        <li class="dotted"><span>...</span></li>
-        <li class="next">
-          <a href="#">下一页»</a>
-        </li>
-      </ul>
-      <div style="line-height: 38px"><span>共10页&nbsp;</span></div>
+      <div style="display: inline-block;">
+        <button
+          class="prev"
+          :disabled="pageNo < 2"
+          @click="$emit('getPageNo', pageNo - 1)"
+          :class="{ disabled: pageNo < 2 }"
+          type="button"
+        >
+          «上一页
+        </button>
+        <button
+          v-show="startNumAndEndNum.start > 1"
+          :class="{ active: pageNo == 1 }"
+          @click="$emit('getPageNo', 1)"
+          type="button"
+        >
+          1
+        </button>
+        <div class="dotted" v-show="startNumAndEndNum.start > 2">...</div>
+        <button
+          type="button"
+          v-for="(page, index) in startNumAndEndNum.end"
+          :key="index"
+          v-show="page >= startNumAndEndNum.start"
+          :class="{ active: pageNo == page }"
+          @click="$emit('getPageNo', page)"
+        >
+          {{ page }}
+        </button>
+        <div class="dotted" v-show="startNumAndEndNum.end < totalPage - 1">
+          ...
+        </div>
+        <button
+          v-show="startNumAndEndNum.end < totalPage"
+          :class="{ active: pageNo == totalPage }"
+          @click="$emit('getPageNo', totalPage)"
+          type="button"
+        >
+          {{ totalPage }}
+        </button>
+        <button
+          :disabled="pageNo == totalPage"
+          @click="$emit('getPageNo', pageNo + 1)"
+          type="button"
+        >
+          下一页»
+        </button>
+      </div>
+      <div style="line-height: 38px" class="total">共{{ total }}页</div>
     </div>
   </div>
 </template>
@@ -35,16 +59,49 @@
 // 例如：import《组件名称》from'《组件路径》';
 
 export default {
-  name: 'pagination',
+  name: "pagination",
   // import引入的组件需要注入到对象中才能使用
   components: {},
-  props: {},
+  props: ["pageNo", "pageSize", "total", "continues"],
   data() {
     // 这里存放数据
     return {};
   },
   // 计算属性:类似于data概念,有缓存效果,用于不经常修改的数据
-  computed: {},
+  computed: {
+    totalPage() {
+      return Math.ceil(this.total / this.pageSize);
+    },
+    startNumAndEndNum() {
+      const { continues, pageNo, totalPage } = this;
+      //先定义两个变量存储起始数字与结束数字
+      let start = 0,
+        end = 0;
+      //连续页码数字5【就是至少五页】，如果出现不正常的现象【就是不够五页】
+      //不正常现象【总页数没有连续页码多】
+      if (continues > totalPage) {
+        start = 1;
+        end = totalPage;
+      } else {
+        //正常现象【连续页码5，但是你的总页数一定是大于5的】
+        //起始数字
+        start = pageNo - parseInt(continues / 2);
+        //结束数字
+        end = pageNo + parseInt(continues / 2);
+        //把出现不正常的现象【start数字出现0|负数】纠正
+        if (start < 1) {
+          start = 1;
+          end = continues;
+        }
+        //把出现不正常的现象[end数字大于总页码]纠正
+        if (end > totalPage) {
+          end = totalPage;
+          start = totalPage - continues + 1;
+        }
+      }
+      return { start, end };
+    },
+  },
   // 监控data中的数据变化
   watch: {},
   // 方法集合
@@ -63,88 +120,68 @@ export default {
 
 <style lang="less" scoped>
 .page {
-  width: 733px;
+  width: 100%;
   height: 66px;
   overflow: hidden;
   float: right;
 
   .sui-pagination {
-    margin: 18px 0;
+    margin: 18px auto;
+    vertical-align: middle;
+    max-width: 700px;
 
-    ul {
-      margin-left: 0;
-      margin-bottom: 0;
-      vertical-align: middle;
-      width: 490px;
-      float: left;
-
-      li {
-        line-height: 18px;
-        display: inline-block;
-
-        a {
-          position: relative;
-          float: left;
-          line-height: 18px;
-          text-decoration: none;
-          background-color: #fff;
-          border: 1px solid #e0e9ee;
-          margin-left: -1px;
-          font-size: 14px;
-          padding: 9px 18px;
-          color: #333;
-        }
-
-        &.active {
-          a {
-            background-color: #fff;
-            color: #e1251b;
-            border-color: #fff;
-            cursor: default;
-          }
-        }
-
-        &.prev {
-          a {
-            background-color: #fafafa;
-          }
-        }
-
-        &.disabled {
-          a {
-            color: #999;
-            cursor: default;
-          }
-        }
-
-        &.dotted {
-          span {
-            margin-left: -1px;
-            position: relative;
-            float: left;
-            line-height: 18px;
-            text-decoration: none;
-            background-color: #fff;
-            font-size: 14px;
-            border: 0;
-            padding: 9px 18px;
-            color: #333;
-          }
-        }
-
-        &.next {
-          a {
-            background-color: #fafafa;
-          }
-        }
-      }
+    button {
+      line-height: 18px;
+      cursor: pointer;
+      position: relative;
+      line-height: 18px;
+      text-decoration: none;
+      background-color: #fff;
+      border: 1px solid #e0e9ee;
+      // margin-left: -1px;
+      font-size: 14px;
+      padding: 9px 18px;
+      color: #333;
     }
 
-    div {
+    .active {
+      background-color: #fff;
+      color: #e1251b;
+      border-color: #fff;
+      cursor: not-allowed;
+    }
+
+    .prev {
+      background-color: #fff;
+    }
+
+    .disabled {
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .dotted {
+      display: inline-block;
+      // margin-left: -1px;
+      position: relative;
+      line-height: 22px;
+      text-decoration: none;
+      background-color: #fff;
+      font-size: 14px;
+      border: 0;
+      padding: 9px 18px;
+      color: #333;
+    }
+
+    .next {
+      background-color: #fafafa;
+    }
+
+    .total {
       color: #333;
       font-size: 14px;
-      float: right;
-      width: 241px;
+      margin-left: 10px;
+      display: inline-block;
     }
   }
 }
