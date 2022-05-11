@@ -6,7 +6,7 @@ module.exports = {
         proxy: {
             '/api': {
                 // 接口所在的服务器
-                target: 'http://39.98.123.211',
+                target: 'http://gmall-h5-api.atguigu.cn',
                 // pathRewrite: { '^/api': '' },
             }
         }
