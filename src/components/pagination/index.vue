@@ -1,7 +1,7 @@
 <template>
   <div class="fr page">
     <div class="sui-pagination clearfix">
-      <div style="display: inline-block;">
+      <div style="display: inline-block">
         <button
           class="prev"
           :disabled="pageNo < 2"
@@ -11,6 +11,7 @@
         >
           «上一页
         </button>
+        <!-- 第一页 -->
         <button
           v-show="startNumAndEndNum.start > 1"
           :class="{ active: pageNo == 1 }"
@@ -20,6 +21,7 @@
           1
         </button>
         <div class="dotted" v-show="startNumAndEndNum.start > 2">...</div>
+        <!-- 中间页码 -->
         <button
           type="button"
           v-for="(page, index) in startNumAndEndNum.end"
@@ -33,6 +35,7 @@
         <div class="dotted" v-show="startNumAndEndNum.end < totalPage - 1">
           ...
         </div>
+        <!-- 最后一页 -->
         <button
           v-show="startNumAndEndNum.end < totalPage"
           :class="{ active: pageNo == totalPage }"
@@ -44,12 +47,13 @@
         <button
           :disabled="pageNo == totalPage"
           @click="$emit('getPageNo', pageNo + 1)"
+          :class="{ disabled: pageNo >= totalPage }"
           type="button"
         >
           下一页»
         </button>
       </div>
-      <div style="line-height: 38px" class="total">共{{ total }}页</div>
+      <div style="line-height: 38px" class="total">共{{ total }}条</div>
     </div>
   </div>
 </template>
@@ -75,8 +79,8 @@ export default {
     startNumAndEndNum() {
       const { continues, pageNo, totalPage } = this;
       //先定义两个变量存储起始数字与结束数字
-      let start = 0,
-        end = 0;
+      let start = 0;
+      let end = 0;
       //连续页码数字5【就是至少五页】，如果出现不正常的现象【就是不够五页】
       //不正常现象【总页数没有连续页码多】
       if (continues > totalPage) {

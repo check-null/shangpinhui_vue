@@ -81,14 +81,15 @@
               </ul>
             </div>
           </div>
+          <!--  -->
           <div class="goods-list">
             <ul class="yui3-g">
               <li class="yui3-u-1-5" v-for="good in goodsList" :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank">
+                    <router-link :to="`/detail/${good.id}`">
                       <img :src="good.defaultImg" />
-                    </a>
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -125,7 +126,8 @@
           <pagination
             :pageNo="searchParams.pageNo"
             :pageSize="searchParams.pageSize"
-            :total="searchParams.total"
+            :total="total"
+            :totalPages="searchParams.totalPages"
             :continues="searchParams.continues"
             @getPageNo="getPageNo"
           />
@@ -138,7 +140,7 @@
 <script>
 import searchSelector from "./searchSelector/searchSelector";
 import pagination from "@/components/pagination";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "Search",
   data() {
@@ -157,14 +159,12 @@ export default {
         //第几页
         pageNo: 1,
         //每一页展示条数
-        pageSize: 3,
+        pageSize: 10,
         //平台属性的操作
         props: [],
         //品牌
         trademark: "",
         pageNo: 1,
-        pageSize: 3,
-        total: 91,
         continues: 5,
       },
     };
@@ -175,11 +175,14 @@ export default {
   },
   computed: {
     ...mapGetters(["goodsList"]),
+    ...mapState({
+      total: (state) => state.search.searchList.total,
+    }),
     isAsc() {
-      return this.searchParams.order.indexOf("asc") != -1;
+      return this.searchParams.order.indexOf("asc") !== -1;
     },
     isDesc() {
-      return this.searchParams.order.indexOf("desc") != -1;
+      return this.searchParams.order.indexOf("desc") !== -1;
     },
   },
   watch: {

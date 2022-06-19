@@ -18,7 +18,7 @@ export default new VueRouter({
     //配置路由
     routes: [
         {
-            path: "/home", component: () => import('@/pages/home')
+            path: "/home", component: () => import('@/pages/home'), meta: { show: true }
         }
         ,
         {
@@ -29,6 +29,9 @@ export default new VueRouter({
         },
         {
             path: "/register", component: () => import('@/pages/register'), meta: { show: false }
+        },
+        {
+            path: "/detail/:skuid", component: () => import('@/pages/detail'), meta: { show: true }
         },
     ]
 })
