@@ -100,7 +100,7 @@
                 <input
                   autocomplete="off"
                   class="itxt"
-                  v-model="skuNum"
+                  v-model.number="skuNum"
                   @change="changeSkuNum"
                 />
                 <a href="javascript:" class="plus" @click="skuNum++">+</a>

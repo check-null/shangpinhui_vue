@@ -19,8 +19,7 @@ export default new VueRouter({
     routes: [
         {
             path: "/home", component: () => import('@/pages/home'), meta: { show: true }
-        }
-        ,
+        },
         {
             path: "/search/:keyword?", component: () => import('@/pages/search'), name: 'search'
         },
@@ -33,5 +32,9 @@ export default new VueRouter({
         {
             path: "/detail/:skuid", component: () => import('@/pages/detail'), meta: { show: true }
         },
+        {
+            path: "/addCartSuccess", name: 'addcartsuccess', component: () => import('@/pages/addCartSuccess'), meta: { show: true }
+        },
+
     ]
 })
