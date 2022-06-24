@@ -35,6 +35,9 @@ export default new VueRouter({
         {
             path: "/addCartSuccess", name: 'addcartsuccess', component: () => import('@/pages/addCartSuccess'), meta: { show: true }
         },
+        {
+            path: "/shopCart", name: 'shopCart', component: () => import('@/pages/shopCart'), meta: { show: true }
+        },
 
     ]
 })

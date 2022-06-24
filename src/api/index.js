@@ -18,4 +18,6 @@ export const reqGetSearchInfo = (params = {}) => request({ url: '/list', method:
 export const reqGoodsInfo = (skuId) => request({ url: `/item/${skuId}`, method: 'get' });
 //将产品添加到购物车中（获取更新某一个产品的个数）
 ///api/cart/addToCart/{ skuId }/{ skuNum }  POST
-export const reqAddOrUpdateShopCart = (skuId, skuNum) => request({ url: `/cart/addToCart/${skuId}/${skuNum}`, method: "post" })
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => request({ url: `/cart/addToCart/${skuId}/${skuNum}`, method: 'post' });
+
+export const reqCartList = () => request({ url: '/cart/cartList', method: 'get' });
