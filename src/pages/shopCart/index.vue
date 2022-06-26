@@ -11,113 +11,56 @@
         <div class="cart-th6">操作</div>
       </div>
       <div class="cart-body">
-        <ul class="cart-list">
+        <ul class="cart-list" v-for="cart in cartInfoList" :key="cart.id">
           <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" />
+            <input
+              type="checkbox"
+              name="chk_list"
+              :checked="cart.isChecked === 1"
+              @change="updateChecked(cart, $event)"
+            />
           </li>
           <li class="cart-list-con2">
-            <img src="./images/goods1.png" />
+            <img :src="cart.imgUrl" />
             <div class="item-msg">
-              米家（MIJIA） 小米小白智能摄像机增强版
-              1080p高清360度全景拍摄AI增强
+              {{ cart.skuName }}
             </div>
           </li>
           <li class="cart-list-con3">
             <div class="item-txt">语音升级款</div>
           </li>
           <li class="cart-list-con4">
-            <span class="price">399.00</span>
+            <span class="price">{{ cart.skuPrice }}.00</span>
           </li>
           <li class="cart-list-con5">
-            <a href="javascript:void(0)" class="mins">-</a>
+            <button
+              type="button"
+              class="mins"
+              @click="handler('minus', -1, cart)"
+            >
+              -
+            </button>
             <input
               autocomplete="off"
               type="text"
-              value="1"
+              v-model.trim="cart.skuNum"
               minnum="1"
               class="itxt"
+              @change="handler('change', $event.target.value * 1, cart)"
             />
-            <a href="javascript:void(0)" class="plus">+</a>
+            <button
+              type="button"
+              class="plus"
+              @click="handler('plus', +1, cart)"
+            >
+              +
+            </button>
           </li>
           <li class="cart-list-con6">
-            <span class="sum">399</span>
+            <span class="sum">{{ cart.skuPrice * cart.skuNum }}</span>
           </li>
           <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
-            <br />
-            <a href="#none">移到收藏</a>
-          </li>
-        </ul>
-
-        <ul class="cart-list">
-          <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" id="" value="" />
-          </li>
-          <li class="cart-list-con2">
-            <img src="./images/goods2.png" />
-            <div class="item-msg">
-              华为（MIJIA） 华为metaPRO 30 浴霸4摄像 超清晰
-            </div>
-          </li>
-          <li class="cart-list-con3">
-            <div class="item-txt">黑色版本</div>
-          </li>
-          <li class="cart-list-con4">
-            <span class="price">5622.00</span>
-          </li>
-          <li class="cart-list-con5">
-            <a href="javascript:void(0)" class="mins">-</a>
-            <input
-              autocomplete="off"
-              type="text"
-              value="1"
-              minnum="1"
-              class="itxt"
-            />
-            <a href="javascript:void(0)" class="plus">+</a>
-          </li>
-          <li class="cart-list-con6">
-            <span class="sum">5622</span>
-          </li>
-          <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
-            <br />
-            <a href="#none">移到收藏</a>
-          </li>
-        </ul>
-
-        <ul class="cart-list">
-          <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" id="" value="" />
-          </li>
-          <li class="cart-list-con2">
-            <img src="./images/goods3.png" />
-            <div class="item-msg">
-              iphone 11 max PRO 苹果四摄 超清晰 超费电 超及好用
-            </div>
-          </li>
-          <li class="cart-list-con3">
-            <div class="item-txt">墨绿色</div>
-          </li>
-          <li class="cart-list-con4">
-            <span class="price">11399.00</span>
-          </li>
-          <li class="cart-list-con5">
-            <a href="javascript:void(0)" class="mins">-</a>
-            <input
-              autocomplete="off"
-              type="text"
-              value="1"
-              minnum="1"
-              class="itxt"
-            />
-            <a href="javascript:void(0)" class="plus">+</a>
-          </li>
-          <li class="cart-list-con6">
-            <span class="sum">11399</span>
-          </li>
-          <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
+            <a href="#none" class="sindelet" @click="deleteById(cart)">删除</a>
             <br />
             <a href="#none">移到收藏</a>
           </li>
@@ -126,7 +69,7 @@
     </div>
     <div class="cart-tool">
       <div class="select-all">
-        <input class="chooseAll" type="checkbox" />
+        <input class="chooseAll" type="checkbox" :checked="isAllChecked" />
         <span>全选</span>
       </div>
       <div class="option">
@@ -138,7 +81,7 @@
         <div class="chosed">已选择 <span>0</span>件商品</div>
         <div class="sumprice">
           <em>总价（不含运费） ：</em>
-          <i class="summoney">0</i>
+          <i class="summoney">{{ totalPrice }} </i>
         </div>
         <div class="sumbtn">
           <a class="sum-btn" href="###" target="_blank">结算</a>
@@ -149,14 +92,86 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import throttle from "lodash/throttle";
 export default {
   name: "shopCart",
+  computed: {
+    ...mapGetters(["cartList"]),
+    cartInfoList() {
+      return this.cartList.cartInfoList || [];
+    },
+    totalPrice() {
+      let sum = 0;
+      this.cartInfoList.forEach((goods) => {
+        if (goods.isChecked === 1) {
+          sum += goods.skuNum * goods.skuPrice;
+        }
+      });
+      return sum;
+    },
+    isAllChecked() {
+      return this.cartInfoList.every((item) => item.isChecked === 1);
+    },
+  },
   mounted() {
     this.getData();
   },
   methods: {
     getData() {
       this.$store.dispatch("getCartList");
+    },
+    handler: throttle(async function (type, disNum, cart) {
+      switch (type) {
+        case "plus":
+          disNum = 1;
+          break;
+        case "minus":
+          disNum = cart.skuNum > 1 ? -1 : 0;
+          break;
+        case "change":
+          // //用户输入进来的最终量，如果非法的（带有汉字|出现负数），带给服务器数字零
+          if (isNaN(disNum) || disNum < 1) {
+            disNum = 0;
+          } else {
+            //属于正常情况（小数：取证），带给服务器变化的量 用户输入进来的 - 产品的起始个数
+            disNum = parseInt(disNum) - cart.skuNum;
+          }
+          // disNum = (isNaN(disNum)||disNum<1)?0:parseInt(disNum) - cart.skuNum;
+          break;
+        default:
+          // 不属于以上类型就终止函数
+          return;
+      }
+
+      try {
+        await this.$store.dispatch("addOrUpdateShopCart", {
+          skuId: cart.skuId,
+          skuNum: disNum,
+        });
+        this.getData();
+      } catch (e) {}
+    }, 500),
+    async deleteById(cart) {
+      try {
+        await this.$store.dispatch("deleteCartListBySkuId", cart.skuId);
+        this.getData();
+      } catch (e) {}
+    },
+    async updateChecked(cart, event) {
+      //带给服务器的参数isChecked，不是布尔值，应该是0|1
+      try {
+        //如果修改数据成功，再次获取服务器数据（购物车）
+        let isChecked = event.target.checked ? 1 : 0;
+        await this.$store.dispatch("updateCheckedById", {
+          skuId: cart.skuId,
+          isChecked,
+        });
+        this.getData();
+      } catch (error) {
+        //如果失败提示
+        alert(error.message);
+      }
     },
   },
 };
@@ -262,9 +277,10 @@ export default {
             border-right: 0;
             float: left;
             color: #666;
-            width: 6px;
+            width: 25px;
             text-align: center;
             padding: 8px;
+            height: 35px;
           }
 
           input {
@@ -281,9 +297,10 @@ export default {
             border-left: 0;
             float: left;
             color: #666;
-            width: 6px;
+            width: 25px;
             text-align: center;
             padding: 8px;
+            height: 35px;
           }
         }
 
@@ -376,5 +393,9 @@ export default {
       }
     }
   }
+}
+
+button {
+  cursor: pointer;
 }
 </style>
