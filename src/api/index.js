@@ -24,4 +24,10 @@ export const reqCartList = () => request({ url: '/cart/cartList', method: 'get' 
 //删除购物车
 export const reqDeleteCartById = (skuId) => request({ url: `/cart/deleteCart/${skuId}`, method: 'delete' })
 //修改商品选中状态
-export const reqUpdateCheckedByid = (skuId, isChecked) => request({ url: `/cart/checkCart/${skuId}/${isChecked}`, method: 'get' })
+export const reqUpdateCheckedByid = (skuId, isChecked) => request({ url: `/cart/checkCart/${skuId}/${isChecked}`, method: 'get' });
+//获取验证码
+export const reqGetCode = (phone) => request({ url: `/user/passport/sendCode/${phone}`, method: 'get' });
+//注册
+export const reqUserRegister = (data) => request({ url: '/user/passport/register', data, method: 'post' });
+//登录
+export const reqUserLogin = (data) => request({ url: '/user/passport/login', data, method: 'post' });

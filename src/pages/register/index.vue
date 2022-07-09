@@ -1,36 +1,210 @@
 <template>
-  <div>register</div>
+  <div class="register-container">
+    <!-- 注册内容 -->
+    <div class="register">
+      <h3>
+        注册新用户
+        <span class="go"
+          >我有账号，去 <a href="login.html" target="_blank">登陆</a>
+        </span>
+      </h3>
+      <div class="content">
+        <label>手机号:</label>
+        <input
+          type="text"
+          placeholder="请输入你的手机号"
+          v-model.trim="phone"
+        />
+        <span class="error-msg">错误提示信息</span>
+      </div>
+      <div class="content">
+        <label>验证码:</label>
+        <input type="text" placeholder="请输入验证码" v-model.trim="code" />
+        <button type="button" class="code-button" @click="getCode">
+          获得验证码
+        </button>
+        <span class="error-msg">错误提示信息</span>
+      </div>
+      <div class="content">
+        <label>登录密码:</label>
+        <input type="text" placeholder="请输入你的登录密码" />
+        <span class="error-msg">错误提示信息</span>
+      </div>
+      <div class="content">
+        <label>确认密码:</label>
+        <input type="text" placeholder="请输入确认密码" />
+        <span class="error-msg">错误提示信息</span>
+      </div>
+      <div class="controls">
+        <input name="m1" type="checkbox" />
+        <span>同意协议并注册《尚品汇用户协议》</span>
+        <span class="error-msg">错误提示信息</span>
+      </div>
+      <div class="btn">
+        <button>完成注册</button>
+      </div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="copyright">
+      <ul>
+        <li>关于我们</li>
+        <li>联系我们</li>
+        <li>联系客服</li>
+        <li>商家入驻</li>
+        <li>营销中心</li>
+        <li>手机尚品汇</li>
+        <li>销售联盟</li>
+        <li>尚品汇社区</li>
+      </ul>
+      <div class="address">地址：北京市昌平区宏福科技园综合楼6层</div>
+      <div class="beian">京ICP备19006430号</div>
+    </div>
+  </div>
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import《组件名称》from'《组件路径》';
-
 export default {
-  //import引入的组件需要注入到对象中才能使用
-  components: {},
-  props: {},
+  name: "register",
   data() {
-    //这里存放数据
-    return {};
+    return {
+      phone: "",
+      code: "",
+    };
   },
-  //计算属性:类似于data概念,有缓存效果,用于不经常修改的数据
-  computed: {},
-  //监控data中的数据变化
-  watch: {},
-  //方法集合
-  beforeCreate() {}, //生命周期-创建之前
-  created() {}, //生命周期-创建完成（可以访问当前this实例）
-  beforeMount() {}, //生命周期-挂载之前
-  mounted() {}, //生命周期-挂载完成（可以访问DOM元素）
-  activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
-  beforeUpdate() {}, //生命周期-更新之前
-  updated() {}, //生命周期-更新之后
-  beforeDestroy() {}, //生命周期-销毁之前
-  destroyed() {}, //生命周期-销毁完成
-  methods: {},
+  methods: {
+    async getCode() {
+      // debugger
+      try {
+        const { phone } = this;
+        phone && (await this.$store.dispatch("getCode", phone));
+        this.code = this.$store.state.user.code;
+        console.log(this.code, this.phone);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
 };
 </script>
 
-<style lang="lcss" scoped>
+<style lang="less" scoped>
+.code-button {
+  width: 100px;
+  height: 36px;
+  margin-left: 10px;
+}
+.register-container {
+  .register {
+    width: 1200px;
+    height: 445px;
+    border: 1px solid rgb(223, 223, 223);
+    margin: 0 auto;
+
+    h3 {
+      background: #ececec;
+      margin: 0;
+      padding: 6px 15px;
+      color: #333;
+      border-bottom: 1px solid #dfdfdf;
+      font-size: 20.04px;
+      line-height: 30.06px;
+
+      span {
+        font-size: 14px;
+        float: right;
+
+        a {
+          color: #e1251b;
+        }
+      }
+    }
+
+    div:nth-of-type(1) {
+      margin-top: 40px;
+    }
+
+    .content {
+      padding-left: 390px;
+      margin-bottom: 18px;
+      position: relative;
+
+      label {
+        font-size: 14px;
+        width: 96px;
+        text-align: right;
+        display: inline-block;
+      }
+
+      input {
+        width: 270px;
+        height: 38px;
+        padding-left: 8px;
+        box-sizing: border-box;
+        margin-left: 5px;
+        outline: none;
+        border: 1px solid #999;
+      }
+
+      img {
+        vertical-align: sub;
+      }
+
+      .error-msg {
+        position: absolute;
+        top: 100%;
+        left: 495px;
+        color: red;
+      }
+    }
+
+    .controls {
+      text-align: center;
+      position: relative;
+
+      input {
+        vertical-align: middle;
+      }
+
+      .error-msg {
+        position: absolute;
+        top: 100%;
+        left: 495px;
+        color: red;
+      }
+    }
+
+    .btn {
+      text-align: center;
+      line-height: 36px;
+      margin: 17px 0 0 55px;
+
+      button {
+        outline: none;
+        width: 270px;
+        height: 36px;
+        background: #e1251b;
+        color: #fff !important;
+        display: inline-block;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .copyright {
+    width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 24px;
+
+    ul {
+      li {
+        display: inline-block;
+        border-right: 1px solid #e4e4e4;
+        padding: 0 20px;
+        margin: 15px 0;
+      }
+    }
+  }
+}
 </style>
