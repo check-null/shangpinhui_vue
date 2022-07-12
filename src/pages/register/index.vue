@@ -27,21 +27,29 @@
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <input type="text" placeholder="请输入你的登录密码" />
+        <input
+          type="password"
+          placeholder="请输入你的登录密码"
+          v-model.trim="password"
+        />
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" />
+        <input
+          type="password"
+          placeholder="请输入确认密码"
+          v-model.trim="password1"
+        />
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="controls">
-        <input name="m1" type="checkbox" />
+        <input name="m1" type="checkbox" :checked="agree" />
         <span>同意协议并注册《尚品汇用户协议》</span>
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="btn">
-        <button>完成注册</button>
+        <button @click="userRegister">完成注册</button>
       </div>
     </div>
 
@@ -70,6 +78,9 @@ export default {
     return {
       phone: "",
       code: "",
+      password: "",
+      password1: "",
+      agree: true,
     };
   },
   methods: {
@@ -82,6 +93,23 @@ export default {
         console.log(this.code, this.phone);
       } catch (error) {
         console.log(error);
+      }
+    },
+    async userRegister() {
+      // const success = await this.$validator.validateAll();
+      //全部表单验证成功，在向服务器发请求，进行祖册
+      //只要有一个表单没有成功，不会发请求
+      try {
+        const { phone, code, password, password1 } = this;
+        await this.$store.dispatch("userRegister", {
+          phone,
+          code,
+          password,
+        });
+        //注册成功进行路由的跳转
+        this.$router.push("/login");
+      } catch (error) {
+        alert(error.message);
       }
     },
   },
