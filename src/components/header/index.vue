@@ -70,12 +70,15 @@ export default {
   data() {
     //这里存放数据
     return {
-      userName: "",
       keyword: "",
     };
   },
   //计算属性:类似于data概念,有缓存效果,用于不经常修改的数据
-  computed: {},
+  computed: {
+    userName() {
+      return this.$store.state.user.userInfo.name;
+    },
+  },
   //监控data中的数据变化
   watch: {},
   //方法集合
@@ -93,7 +96,10 @@ export default {
   beforeDestroy() {}, //生命周期-销毁之前
   destroyed() {}, //生命周期-销毁完成
   methods: {
-    logout() {},
+    logout() {
+      this.$store.dispatch("userLogout");
+      // this.$router.go(0);
+    },
     goSearch() {
       if (this.$route.query) {
         let loction = {

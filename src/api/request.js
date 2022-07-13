@@ -14,7 +14,10 @@ requests.interceptors.request.use((config) => {
     nprogress.start();
     let tempToken = store.state.detail.uuid_token ??= false;
     if (tempToken) {
-        config.headers.userTempId = tempToken; 
+        config.headers.userTempId = tempToken;
+    }
+    if (store.state.user.token) {
+        config.headers.token = store.state.user.token;
     }
     return config;
 });

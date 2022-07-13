@@ -20,6 +20,7 @@ export default {
   },
   created() {
     this.$store.dispatch("categoryList");
+    this.$router.push('home')
   },
 };
 </script>

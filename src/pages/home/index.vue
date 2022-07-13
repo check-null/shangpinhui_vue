@@ -41,6 +41,7 @@ export default {
   beforeCreate() {}, //生命周期-创建之前
   created() {
     this.$store.dispatch("getFloorList");
+    this.$store.dispatch("getUserInfo");
   }, //生命周期-创建完成（可以访问当前this实例）
   beforeMount() {}, //生命周期-挂载之前
   mounted() {}, //生命周期-挂载完成（可以访问DOM元素）
