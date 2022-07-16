@@ -39,7 +39,9 @@ let router = new VueRouter({
         {
             path: "/shopCart", name: 'shopCart', component: () => import('@/pages/shopCart'), meta: { show: true }
         },
-
+        {
+            path: "/trade", name: 'trade', component: () => import('@/pages/trade'), meta: { show: true }
+        },
     ]
 })
 
