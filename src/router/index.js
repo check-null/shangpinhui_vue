@@ -42,6 +42,9 @@ let router = new VueRouter({
         {
             path: "/trade", name: 'trade', component: () => import('@/pages/trade'), meta: { show: true }
         },
+        {
+            path: "/pay", name: 'pay', component: () => import('@/pages/pay'), meta: { show: true }
+        },
     ]
 })
 
@@ -55,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     let token = store.state.user.token;
     let name = store.state.user.userInfo.name;
     //用户登录了
-    if (token) {
+    if (token && name) {
         //已经登录而且还想去登录------不行
         if (to.path == "/login" || to.path == '/register') {
             next('/');
@@ -69,6 +72,7 @@ router.beforeEach(async (to, from, next) => {
                 //在路由跳转之前获取用户信息且放行
                 try {
                     await store.dispatch('getUserInfo');
+                    console.log('3', to);
                     next();
                 } catch (error) {
                     //token失效从新登录
@@ -83,13 +87,16 @@ router.beforeEach(async (to, from, next) => {
         let toPath = to.path;
         if (toPath.indexOf('/trade') != -1 || toPath.indexOf('/pay') != -1 || toPath.indexOf('/center') != -1) {
             //把未登录的时候向去而没有去成的信息，存储于地址栏中【路由】
+            console.log('2', to);
             next('/login?redirect=' + toPath);
         } else {
             //去的不是上面这些路由（home|search|shopCart）---放行
+            console.log('1', to);
             next();
         }
 
     }
 });
+
 
 export default router;
