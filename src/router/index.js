@@ -16,6 +16,7 @@ VueRouter.prototype.push = function (location, resolve, reject) {
 
 //配置路由
 let router = new VueRouter({
+    mode: 'history',
     //配置路由
     routes: [
         {
@@ -44,6 +45,29 @@ let router = new VueRouter({
         },
         {
             path: "/pay", name: 'pay', component: () => import('@/pages/pay'), meta: { show: true }
+        },
+        {
+            path: "/paySuccess", name: 'paySuccess', component: () => import('@/pages/paySuccess'), meta: { show: true }
+        },
+        {
+            path: '/center',
+            component: () => import('@/pages/center'),
+            children: [
+                {
+                    // path: '/center/myorder',
+                    path: 'myOrder',
+                    component: () => import('@/pages/center/myOrder'),
+                },
+                {
+                    path: 'groupOrder',
+                    component: () => import('@/pages/center/groupOrder'),
+                },
+
+                {
+                    path: '',
+                    redirect: 'myorder'
+                }
+            ]
         },
     ]
 })
