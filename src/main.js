@@ -9,7 +9,7 @@ import store from '@/store';
 import * as API from '@/api';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-
+import VeeValidate from 'vee-validate';
 //引入swiper样式
 import "swiper/css/swiper.css";
 
@@ -19,6 +19,7 @@ Vue.component(Carsousel.name, Carsousel);
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(VeeValidate);
 new Vue({
   render: h => h(App),
   // 全局事件总线
